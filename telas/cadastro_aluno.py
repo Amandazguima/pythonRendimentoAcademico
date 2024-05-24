@@ -10,20 +10,32 @@ class CadastroAluno:
 
         self.txtId = tk.Entry(bd=3)
         self.txtNome= tk.Entry()
-        self.txtNomeDisciplina = tk.Entry()
-        self.txtNota1 = tk.Entry()
-        self.txtNota2 = tk.Entry()
+
 
         self.btnCadastrar = tk.Button(win,text='Cadastrar', command=self.functionCadastrarAluno)
         self.btnAtualizar = tk.Button(win,text='Atualizar', command=self.functionAtualizarBanco)
         self.btnExcluir = tk.Button(win,text='Excluir', command=self.functionExcluirAluno)
         self.btnLimpar = tk.Button(win,text='Limpar', command=self.functionLimparTela)
 
+        #Posicionamento dos componentes
+        self.lbId.place(x=100, y=50)
+        self.txtId.place(x=250, y=50)
+        self.lblNome.place(x=100, y=100)
+        self.txtNome.place(x=250, y=100)
+        self.btnCadastrar.place(x=100, y=200)
+        self.btnAtualizar.place(x=200, y=200)
+        self.btnLimpar.place(x=300, y=200)
+        self.btnExcluir.place(x=400, y=200)
+        
+        
+        #Inicio e conexão com o banco de dados: 
+        self.db_pg_context = Postgre_Sql_Context()
+
     def functionCadastrarAluno(self):
         try:
-            id, nome, nomeDisciplina, nota1, nota2 = self.functionLerCampos()
+            id, nome = self.functionLerCampos()
 
-            self.inserirDados(id, nome, nomeDisciplina, nota1, nota2)
+            self.inserirDados(id, nome)
 
             self.functionLimparTela()
             print('Aluno Cadastrado com Sucesso')
@@ -31,35 +43,53 @@ class CadastroAluno:
         except Exception as e:
             print('Não foi possivel realizar o cadastro.', e)
 
+    def inserirDados(self, id, nome):
+        try:
+            query = f"INSERT INTO public.alunos(id, nome) VALUES({id}, '{nome}')"
+           
+            self.db_pg_context.conectar()
+
+            self.db_pg_context.executar_update_sql(query)
+
+            self.db_pg_context.desconectar()
+
+        except Exception as e:
+            print("Não foi possível fazer o cadastro", e)
+
+
     def functionLimparTela(self):
         try:
             self.txtId.delete(0,tk.END)
+
             self.txtNome.delete(0,tk.END)
+
             print('Os campos foram limpos')
         except Exception as e:
             print('Não foi possivel limpar os campos.', e)
 
-    def funtionLerCampos(self):
+    def functionLerCampos(self):
         try:
             id = self.txtId.get()
+
             nome = self.txtNome.get()
+
             print('Leitura dos dados com sucesso')
         except Exception as e: 
             print('Não foi possivel ler os dados.', e)
         
-        return nome, id 
+        return  id, nome
     
     def functionAtualizarBanco(self):
         try:
-            id, nome, nomeDisciplina, nota1, nota2 = self.funtionLerCampos()
+            id, nome = self.functionLerCampos()
 
-            query= "f * UPDATE public.alunos SET nome='{nome}', id = '{id}''"
+            query = f"UPDATE public.alunos SET nome='{nome}' WHERE id = {id}"
 
             self.db_pg_context.conectar()
 
-            self.db_pg_executar_update_sql(query)
+            self.db_pg_context.executar_update_sql(query)
 
-            self.db_pg_context.descontectar()
+            self.db_pg_context.desconectar()
 
             self.functionLimparTela()
 
@@ -70,13 +100,13 @@ class CadastroAluno:
         try:
             id = self.txtId.get()
 
-            query = "f* DELETE FROM public.alunos"
+            query = f"DELETE FROM public.alunos WHERE id={id}"
             
             self.db_pg_context.conectar()
 
-            self.db_pg_executar_update_sql(query)
+            self.db_pg_context.executar_update_sql(query)
 
-            self.db_pg_context.descontectar()
+            self.db_pg_context.desconectar()
 
             self.functionLimparTela()
 
