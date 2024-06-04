@@ -1,9 +1,13 @@
 import tkinter as tk
-
 from data.context.postgre_sql_context import Postgre_Sql_Context
+from telas.cadastro_disciplina import CadastroDisciplina
+
 
 class CadastroAluno:
-    def __init__(self,win):
+    def __init__(self, win):
+
+        self.win = win
+
         #Componentes:
         self.lbId = tk.Label(win,text='id do Aluno')
         self.lblNome = tk.Label(win, text='Nome do Aluno')
@@ -11,11 +15,12 @@ class CadastroAluno:
         self.txtId = tk.Entry(bd=3)
         self.txtNome= tk.Entry()
 
-
         self.btnCadastrar = tk.Button(win,text='Cadastrar', command=self.functionCadastrarAluno)
         self.btnAtualizar = tk.Button(win,text='Atualizar', command=self.functionAtualizarBanco)
         self.btnExcluir = tk.Button(win,text='Excluir', command=self.functionExcluirAluno)
         self.btnLimpar = tk.Button(win,text='Limpar', command=self.functionLimparTela)
+        self.btnDisciplina = tk.Button(win, text="Cadastrar Disciplina", command= self.proximaPagina)
+        self.btnDisciplina.pack()
 
         #Posicionamento dos componentes
         self.lbId.place(x=100, y=50)
@@ -26,8 +31,8 @@ class CadastroAluno:
         self.btnAtualizar.place(x=200, y=200)
         self.btnLimpar.place(x=300, y=200)
         self.btnExcluir.place(x=400, y=200)
-        
-        
+        self.btnDisciplina.place(x=100, y=250)
+
         #Inicio e conexão com o banco de dados: 
         self.db_pg_context = Postgre_Sql_Context()
 
@@ -38,6 +43,7 @@ class CadastroAluno:
             self.inserirDados(id, nome)
 
             self.functionLimparTela()
+
             print('Aluno Cadastrado com Sucesso')
 
         except Exception as e:
@@ -59,9 +65,9 @@ class CadastroAluno:
 
     def functionLimparTela(self):
         try:
-            self.txtId.delete(0,tk.END)
+            self.txtId.delete(0, tk.END)
 
-            self.txtNome.delete(0,tk.END)
+            self.txtNome.delete(0, tk.END)
 
             print('Os campos foram limpos')
         except Exception as e:
@@ -77,7 +83,7 @@ class CadastroAluno:
         except Exception as e: 
             print('Não foi possivel ler os dados.', e)
         
-        return  id, nome
+        return id, nome
     
     def functionAtualizarBanco(self):
         try:
@@ -112,3 +118,9 @@ class CadastroAluno:
 
         except Exception as e:
             print('Não foi possivel deletar o aluno',e)
+
+    def proximaPagina(self):
+        self.win.withdraw()
+        cadastro_disciplina = CadastroDisciplina(self.win)
+        self.win.mainloop()
+
