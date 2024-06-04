@@ -3,77 +3,81 @@ from tkinter import ttk
 
 from data.context.postgre_sql_context import Postgre_Sql_Context
 
+
 class CadastroAlunoDisciplina:
-    def __init__(self,win):
+    def __init__(self, win):
         #Componentes:
-        self.lbId = tk.Label(win,text='id Aluno Disciplina')
+        self.lbId = tk.Label(win, text='id Aluno Disciplina')
+        self.lblAluno = tk.Label(win, text='id do Aluno')
+        self.lblDisciplina = tk.Label(win, text='id da Disciplina')
         self.lblnotaUm = tk.Label(win, text='Nota 1')
         self.lblnotaDois = tk.Label(win, text='Nota 2')
-        self.lblAluno = tk.Label(win, text='Nome do Aluno')
-        self.lblDisciplina = tk.Label(win, text='Nome da Disciplina')
+        self.lblMedia = tk.Label (win, text="")
 
-        #Combobox alunos e disciplinas
-        self.aluno_var = tk.StringVar(win)
-        self.combobox_alunos = ttk.Combobox(win, textvariable=self.aluno_var)
-        self.disciplina_var = tk.StringVar(win)
-        self.combobox_disciplinas = ttk.Combobox(win, textvariable=self.disciplina_var)
 
         self.txtId = tk.Entry(bd=3)
+        self.txtIdAluno = tk.Entry()
+        self.txtIdDisciplina = tk.Entry()
         self.txtnotaUm = tk.Entry()
-        self.txtnotaDois= tk.Entry()
+        self.txtnotaDois = tk.Entry()
 
-        
-        self.btnCadastrar = tk.Button(win,text='Cadastrar', command=self.functionCadastrarNotas)
-        self.btnAtualizar = tk.Button(win,text='Atualizar', command=self.functionAtualizarNotas)
-        self.btnExcluir = tk.Button(win,text='Excluir', command=self.functionExcluirNotas)
-        self.btnLimpar = tk.Button(win,text='Limpar', command=self.functionLimparTela)
-        
-        
+        self.btnCadastrar = tk.Button(win, text='Cadastrar', command=self.functionCadastrarNotas)
+        self.btnAtualizar = tk.Button(win, text='Atualizar', command=self.functionAtualizarNotas)
+        self.btnExcluir = tk.Button(win, text='Excluir', command=self.functionExcluirNotas)
+        self.btnLimpar = tk.Button(win, text='Limpar', command=self.functionLimparTela)
+        self.btnCalcular = tk.Button(win, text='Calcular Média', command=self.exibirRendimento)
+
+
         #Posicionamento dos componentes
         self.lbId.place(x=100, y=50)
         self.txtId.place(x=250, y=50)
         self.lblAluno.place(x=100, y=100)
-        self.combobox_alunos.place(x=250, y=100)
+        self.txtIdAluno.place(x=250, y=100)
         self.lblDisciplina.place(x=100, y=150)
-        self.combobox_disciplinas.place(x=250, y=150)
+        self.txtIdDisciplina.place(x=250, y=150)
         self.lblnotaUm.place(x=100, y=200)
         self.txtnotaUm.place(x=250, y=200)
         self.lblnotaDois.place(x=100, y=250)
         self.txtnotaDois.place(x=250, y=250)
-        self.btnCadastrar.place(x=100, y=300)
-        self.btnAtualizar.place(x=200, y=300)
-        self.btnLimpar.place(x=300, y=300)
-        self.btnExcluir.place(x=400, y=300)
-        
-        
-        
+        self.btnCadastrar.place(x=100, y=350)
+        self.btnAtualizar.place(x=200, y=350)
+        self.btnLimpar.place(x=300, y=350)
+        self.btnExcluir.place(x=400, y=350)
+        self.btnCalcular.place(x=100, y=300)
+        self.lblMedia.place(x=250, y=300)
+
+
         #Inicio e conexão com o banco de dados: 
         self.db_pg_context = Postgre_Sql_Context()
 
+
+
     def functionCadastrarNotas(self):
         try:
-            id, notaUm, notaDois, = self.functionLerCampos()
+            id, aluno, disciplina, notaUm, notaDois, = self.functionLerCampos()
 
-            self.inserirDados(id, notaUm, notaDois)
+            self.inserirDados(id, aluno, disciplina, notaUm, notaDois)
 
             self.functionLimparTela()
-            
-            print('Disciplina Cadastrada com Sucesso')
+
+            print('Notas Cadastrada com Sucesso')
+
+            self.rendimentoEscolar()
 
         except Exception as e:
             print('Não foi possivel realizar o cadastro.', e)
 
     def functionLimparTela(self):
         try:
-            self.txtId.delete(0,tk.END)
+            self.txtId.delete(0, tk.END)
 
-            self.combobox_alunos.current(0)
+            self.txtIdAluno.delete(0, tk.END)
 
-            self.combobox_disciplinas.current(0)       
-            
-            self.txtnotaUm.delete(0,tk.END)
-            
-            self.txtnotaDois.delete(0,tk.END)     
+            self.txtIdDisciplina.delete(0, tk.END)
+
+            self.txtnotaUm.delete(0, tk.END)
+
+            self.txtnotaDois.delete(0, tk.END)
 
             print('Os campos foram limpos')
 
@@ -84,23 +88,23 @@ class CadastroAlunoDisciplina:
         try:
             id = int(self.txtId.get())
 
-            aluno = self.combobox_aluno.get().split(" - ")[0]
+            aluno = int(self.txtIdAluno.get())
 
-            disciplina = self.combobox_disciplina.get().split(" - ")[0]
+            disciplina = int(self.txtIdDisciplina.get())
 
             notaUm = float(self.txtnotaUm.get())
 
             notaDois = float(self.txtnotaDois.get())
 
             print('Leitura dos dados com sucesso')
-        except Exception as e: 
+        except Exception as e:
             print('Não foi possivel ler os dados.', e)
         return id, aluno, disciplina, notaUm, notaDois
 
-    def inserirDados(self, aluno, disciplina, notaUm, notaDois):
+    def inserirDados(self, id, aluno, disciplina, notaUm, notaDois):
         try:
-            query = f"INSERT INTO public.alunodisciplina(aluno_id, disciplina_id, notaUm, notaDois) VALUES({aluno}, {disciplina}, {notaUm}, {notaDois} );"
-           
+            query = f"INSERT INTO public.alunodisciplina(id, aluno_id, disciplina_id, notaUm, notaDois) VALUES({id},{aluno},{disciplina}, {notaUm}, {notaDois});"
+
             self.db_pg_context.conectar()
 
             self.db_pg_context.executar_update_sql(query)
@@ -110,11 +114,11 @@ class CadastroAlunoDisciplina:
         except Exception as e:
             print("Não foi possível fazer o cadastro", e)
 
-    def functionAtualizarNotas(self):  
+    def functionAtualizarNotas(self):
         try:
-            id, nomeDisciplina, professor = self.functionLerCampos()
+            id, aluno, disciplina, notaUm, notaDois = self.functionLerCampos()
 
-            query= f"UPDATE public.disciplinas SET nomedisciplina = '{nomeDisciplina}', professor = '{professor}' WHERE id = {id}"
+            query = f"UPDATE public.alunodisciplina SET notaUm = {notaUm}, notaDois = {notaDois} WHERE aluno_id = {aluno} AND disciplina_id = {disciplina} ;"
 
             self.db_pg_context.conectar()
 
@@ -122,17 +126,17 @@ class CadastroAlunoDisciplina:
 
             self.db_pg_context.desconectar()
 
-            self.functionLimparTela()
+            print('Notas atualizadas com sucesso')
 
         except Exception as e:
-            print('Não foi possivel atualiza o cadastro da disciplina', e)
-        
+            print("Não foi possível atualizar as notas", e)
+
     def functionExcluirNotas(self):
         try:
             id = self.txtId.get()
 
-            query = f"DELETE FROM public.disciplinas WHERE id ={id}"
-            
+            query = f"DELETE FROM public.alunodisciplina WHERE id ={id}"
+
             self.db_pg_context.conectar()
 
             self.db_pg_context.executar_update_sql(query)
@@ -144,52 +148,22 @@ class CadastroAlunoDisciplina:
             print("A disciplina foi deletada com sucesso")
 
         except Exception as e:
-            print('Não foi possivel deletar a disciplina',e)
-    
-    def buscar_alunos(self):
-        try:
-            self.db_pg_context.conectar()
-           
-            query = "SELECT nome FROM alunos"
-            
-            resultado = self.db_pg_context.executar_update_sql(query)
-            
-            self.db_pg_context.desconectar()
-            
-            self.functionLimparTela()
-        except Exception as e:
-            print('Não foi possivel achar o aluno',e)
-        return [linha[0] for linha in resultado]
-    
-    def buscar_disciplinas(self):
-        try:
-            self.db_pg_context.conectar()
-            
-            resultado = query = "SELECT nomedisciplina FROM disciplinas"
-            
-            self.db_pg_context.executar_update_sql(query)
-            
-            self.db_pg_context.desconectar()
-            
-            self.functionLimparTela()
-        except Exception as e:
-            print('Não foi possivel achar a disciplina',e)
-        return [linha[0] for linha in resultado]
-    
-    def carregar_alunos(self):
-        try:
-            alunos = self.buscar_alunos()
+            print('Não foi possivel deletar a disciplina', e)
 
-            print("Alunos carregados:", alunos)
+    def rendimentoEscolar(self):
+       try:
+            notaUm = float(self.txtnotaUm.get())
+            notaDois = float(self.txtnotaDois.get())
 
-            self.combobox_alunos['values'] = [f"{aluno[0]} - {aluno[1]}" for aluno in alunos]
-        except Exception as e:
-            print('Não foi possível carregar os alunos.', e)
+            media = (notaUm + notaDois)/ 2
 
-    def carregar_disciplinas(self):
-        try:
-            disciplinas = self.buscar_disciplinas()
-            
-            self.combobox_disciplinas['values'] = [f"{disciplina[0]} - {disciplina[1]}" for disciplina in disciplinas]
-        except Exception as e:
-            print('Não foi possível carregar as disciplinas.', e)
+            if media < 6:
+                return "Reprovado"
+            else:
+                return "Aprovado"
+       except Exception as e:
+            print('Erro: Insira valores numéricos válidos nas notas.', e)
+
+    def exibirRendimento(self):
+        resultado = self.rendimentoEscolar()
+        self.lblMedia.config(text=resultado)
