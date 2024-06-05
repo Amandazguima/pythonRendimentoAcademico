@@ -87,6 +87,8 @@ class CadastroAlunoDisciplina(tk.Toplevel):
 
             self.txtnotaDois.delete(0, tk.END)
 
+            self.lblMedia.config(text="")
+
             print('Os campos foram limpos')
 
         except Exception as e:
@@ -159,18 +161,16 @@ class CadastroAlunoDisciplina(tk.Toplevel):
             print('Não foi possivel deletar a disciplina', e)
 
     def rendimentoEscolar(self):
-       try:
-            notaUm = float(self.txtnotaUm.get())
-            notaDois = float(self.txtnotaDois.get())
 
-            media = (notaUm + notaDois)/ 2
+        notaUm = float(self.txtnotaUm.get())
+        notaDois = float(self.txtnotaDois.get())
 
-            if media < 6:
-                return "Reprovado"
-            else:
-                return "Aprovado"
-       except Exception as e:
-            print('Erro: Insira valores numéricos válidos nas notas.', e)
+        media = (notaUm + notaDois)/ 2
+
+        if media < 6:
+             return "Reprovado"
+        else:
+            return "Aprovado"
 
     def exibirRendimento(self):
         resultado = self.rendimentoEscolar()
