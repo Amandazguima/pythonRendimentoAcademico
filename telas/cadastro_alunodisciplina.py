@@ -4,28 +4,36 @@ from tkinter import ttk
 from data.context.postgre_sql_context import Postgre_Sql_Context
 
 
-class CadastroAlunoDisciplina:
-    def __init__(self, win):
+class CadastroAlunoDisciplina(tk.Toplevel):
+    def __init__(self, master=None):
+
+        super().__init__(master)
+        self.master = master
+        self.title("Cadastro de Notas")
+        self.geometry("600x400")
+
         #Componentes:
-        self.lbId = tk.Label(win, text='id Aluno Disciplina')
-        self.lblAluno = tk.Label(win, text='id do Aluno')
-        self.lblDisciplina = tk.Label(win, text='id da Disciplina')
-        self.lblnotaUm = tk.Label(win, text='Nota 1')
-        self.lblnotaDois = tk.Label(win, text='Nota 2')
-        self.lblMedia = tk.Label (win, text="")
+        self.lbId = tk.Label(self, text='id Aluno Disciplina')
+        self.lblAluno = tk.Label(self, text='id do Aluno')
+        self.lblDisciplina = tk.Label(self, text='id da Disciplina')
+        self.lblnotaUm = tk.Label(self, text='Nota 1')
+        self.lblnotaDois = tk.Label(self, text='Nota 2')
+        self.lblMedia = tk.Label (self, text="")
 
 
-        self.txtId = tk.Entry(bd=3)
-        self.txtIdAluno = tk.Entry()
-        self.txtIdDisciplina = tk.Entry()
-        self.txtnotaUm = tk.Entry()
-        self.txtnotaDois = tk.Entry()
+        self.txtId = tk.Entry(self)
+        self.txtIdAluno = tk.Entry(self)
+        self.txtIdDisciplina = tk.Entry(self)
+        self.txtnotaUm = tk.Entry(self)
+        self.txtnotaDois = tk.Entry(self)
 
-        self.btnCadastrar = tk.Button(win, text='Cadastrar', command=self.functionCadastrarNotas)
-        self.btnAtualizar = tk.Button(win, text='Atualizar', command=self.functionAtualizarNotas)
-        self.btnExcluir = tk.Button(win, text='Excluir', command=self.functionExcluirNotas)
-        self.btnLimpar = tk.Button(win, text='Limpar', command=self.functionLimparTela)
-        self.btnCalcular = tk.Button(win, text='Calcular Média', command=self.exibirRendimento)
+        self.btnCadastrar = tk.Button(self, text='Cadastrar', command=self.functionCadastrarNotas)
+        self.btnAtualizar = tk.Button(self, text='Atualizar', command=self.functionAtualizarNotas)
+        self.btnExcluir = tk.Button(self, text='Excluir', command=self.functionExcluirNotas)
+        self.btnLimpar = tk.Button(self, text='Limpar', command=self.functionLimparTela)
+        self.btnCalcular = tk.Button(self, text='Calcular Média', command=self.exibirRendimento)
+        self.back_button = ttk.Button(self, text="Voltar para o cadastro de alunos", command=self.cadastroAluno)
+        self.back_button.pack(pady=10)
 
 
         #Posicionamento dos componentes
@@ -167,3 +175,7 @@ class CadastroAlunoDisciplina:
     def exibirRendimento(self):
         resultado = self.rendimentoEscolar()
         self.lblMedia.config(text=resultado)
+
+    def cadastroAluno(self):
+        self.destroy()
+        self.master.deiconify()

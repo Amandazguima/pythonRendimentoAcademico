@@ -3,32 +3,29 @@ from tkinter import ttk
 
 from data.context.postgre_sql_context import Postgre_Sql_Context
 
-
 class CadastroDisciplina(tk.Toplevel):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
         self.title("Cadastro de Disciplina")
-        self.geometry("500x300")
-        self.transient(master)
-        self.grab_set()
+        self.geometry("600x400")
 
         #Componentes:
-        self.lbId = tk.Label(master, text='id da Disciplina')
-        self.lblNomeDaDisciplina = tk.Label(master, text='Nome da Disciplina')
-        self.lblprofessor = tk.Label(master, text='Nome do Professor')
+        self.lbId = tk.Label(self, text='id da Disciplina')
+        self.lblNomeDaDisciplina = tk.Label(self, text='Nome da Disciplina')
+        self.lblprofessor = tk.Label(self, text='Nome do Professor')
 
-        self.txtId = tk.Entry(bd=3)
-        self.txtNomeDisciplina = tk.Entry()
-        self.txtprofessor = tk.Entry()
+        self.txtId = tk.Entry(self)
+        self.txtNomeDisciplina = tk.Entry(self)
+        self.txtprofessor = tk.Entry(self)
 
-        self.btnCadastrar = tk.Button(master, text='Cadastrar', command=self.functionCadastrarDisciplina)
-        self.btnAtualizar = tk.Button(master, text='Atualizar', command=self.functionAtualizarDisciplina)
-        self.btnExcluir = tk.Button(master, text='Excluir', command=self.function_excluir)
-        self.btnLimpar = tk.Button(master, text='Limpar', command=self.functionLimparTela)
+        self.btnCadastrar = tk.Button(self, text='Cadastrar', command=self.functionCadastrarDisciplina)
+        self.btnAtualizar = tk.Button(self, text='Atualizar', command=self.functionAtualizarDisciplina)
+        self.btnExcluir = tk.Button(self, text='Excluir', command=self.function_excluir)
+        self.btnLimpar = tk.Button(self, text='Limpar', command=self.functionLimparTela)
 
-        self.back_button = ttk.Button(master, text="Voltar para o cadastro de alunos", command=self.cadastroAluno)
-        self.back_button.pack(pady=20)
+        self.back_button = ttk.Button(self, text="Voltar para o cadastro de alunos", command=self.cadastroAluno)
+        self.back_button.pack(pady=10)
 
         #Posicionamento dos componentes
         self.lbId.place(x=100, y=50)

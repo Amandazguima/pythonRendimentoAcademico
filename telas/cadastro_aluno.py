@@ -1,6 +1,8 @@
 import tkinter as tk
 from data.context.postgre_sql_context import Postgre_Sql_Context
+from telas.cadastro_alunodisciplina import CadastroAlunoDisciplina
 from telas.cadastro_disciplina import CadastroDisciplina
+from telas.consulta import Consulta
 
 
 class CadastroAluno:
@@ -20,7 +22,8 @@ class CadastroAluno:
         self.btnExcluir = tk.Button(win,text='Excluir', command=self.functionExcluirAluno)
         self.btnLimpar = tk.Button(win,text='Limpar', command=self.functionLimparTela)
         self.btnDisciplina = tk.Button(win, text="Cadastrar Disciplina", command= self.proximaPagina)
-        self.btnDisciplina.pack()
+        self.btnAlunoDisciplina = tk.Button(win, text="Cadastrar Notas", command=self.cadastroNotas)
+        self.btnConsultar = tk.Button(win, text="Consultar tabela", command=self.consultarNotas)
 
         #Posicionamento dos componentes
         self.lbId.place(x=100, y=50)
@@ -32,6 +35,8 @@ class CadastroAluno:
         self.btnLimpar.place(x=300, y=200)
         self.btnExcluir.place(x=400, y=200)
         self.btnDisciplina.place(x=100, y=250)
+        self.btnAlunoDisciplina.place(x=220, y=250)
+        self.btnConsultar.place(x=320, y=250)
 
         #Inicio e conexão com o banco de dados: 
         self.db_pg_context = Postgre_Sql_Context()
@@ -122,5 +127,14 @@ class CadastroAluno:
     def proximaPagina(self):
         self.win.withdraw()
         cadastro_disciplina = CadastroDisciplina(self.win)
-        self.win.mainloop()
+        cadastro_disciplina.mainloop()
 
+    def cadastroNotas(self):
+        self.win.withdraw()
+        cadastro_alunodisciplina = CadastroAlunoDisciplina(self.win)
+        cadastro_alunodisciplina.mainloop()
+
+    def consultarNotas(self):
+        self.win.withdraw()
+        consultas = Consulta(self.win)
+        consultas.mainloop()
